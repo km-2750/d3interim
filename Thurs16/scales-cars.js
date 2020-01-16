@@ -1,26 +1,66 @@
+var margin = {top: 30, right: 30, bottom: 30, left: 30};
+var width = 660 - margin.left - margin.right,
+    height = 460 - margin.top - margin.bottom;
 d3.select("body")
+    .style("background-color", "#0066cc")
     .append("svg")
     .attr("id", "carsScatter")
-    .attr("width",600)
-    .attr("height", 400)
-let x = cars.map(d => d.disp)
-let y = cars.map(d => d.mpg)
-let disp = 
-d3.scaleLinear()
-    .domain(d3.extent(x))
-    .range([5, 595])
-let mpg = 
-d3.scaleLinear()
-    .domain(d3.extent(y))
-    .range([5, 395])
+    .attr("width",660)
+    .attr("height", 460)
+    .style("background-color", "white")
+    .append("g")
+    .attr("id","scatterInner")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("transform", "translate(" + margin.left+"," + margin.top +")")
 
-d3.selectAll("svg#carsScatter")
+let dispDomain = cars.map(d => d.disp)
+let mpgDomain = cars.map(d => d.mpg)
+let wtDomain = cars.map(d => d.wt)
+let cylDomain = cars.map(d => d.cyl)
+
+
+let dispXScale = 
+d3.scaleLinear()
+    .domain(d3.extent(dispDomain))
+    .range([50, 550])
+let mpgYScale = 
+d3.scaleLinear()
+    .domain(d3.extent(mpgDomain))
+    .range([50, 350])
+let wtrScale = 
+d3.scaleSqrt()
+    .domain(d3.extent(wtDomain))
+    .range([0,25])
+let cylColorScale = 
+d3.scaleSequential()
+    .domain(d3.extent(cylDomain))
+    .interpolator(d3.interpolateCool)
+
+
+d3.selectAll("g#scatterInner")
     .selectAll("circle")
     .data(cars)
     .enter()
     .append("circle")
-    .attr("cx", (d,i) => disp(x[i]))
-    .attr("cy", (d,i) => mpg(y[i]))
-    .attr("r", 5)
-    .attr("stroke", "red")
+    .attr("cx", (d,i) => dispXScale(dispDomain[i]))
+    .attr("cy", (d,i) => mpgYScale(mpgDomain[i]))
+    .attr("r", (d,i) => wtrScale(wtDomain[i]))
+    .attr("stroke", (d,i) => cylColorScale(cylDomain[i]))
     .attr("fill", "transparent")
+    
+let xAxis = d3.axisBottom(dispXScale)    
+let yAxis = d3.axisLeft(mpgYScale)
+let innerHeight = 360
+
+d3.select("svg#carsScatter")
+  .append('g')
+  .attr('transform', 'translate('+ 0 +', ' + innerHeight + ')')
+  .attr('class', 'x-axis')
+  .call(xAxis)
+
+d3.select("svg#carsScatter")
+  .append('g')
+  .attr('transform', 'translate(' + 45 + ', ' + 0 + ')')
+  .attr('class', 'y-axis')
+  .call(yAxis)
