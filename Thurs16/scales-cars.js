@@ -66,7 +66,7 @@ d3.select("g#scatterInner")
   .attr('class', 'x-axis')
   .call(xAxis)
 
-  d3.select("g#scatterInner")
+d3.select("g#scatterInner")
   .append('g')
   .attr('transform', 'translate(' + 0 + ', ' + 0 + ')')
   .attr('class', 'y-axis')
